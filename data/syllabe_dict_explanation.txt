@@ -1,0 +1,46 @@
+The Syllable Dictionary
+
+This document provides an explanation of the file Syllable_dictionary.txt.
+
+1.	Each row in the syllable dictionary corresponds to a word that appears in
+Shakespeare’s sonnets. All words in Shakespeare’s sonnets are represented in
+this dictionary; however, words that appear in Spenser’s sonnets but not in
+Shakespeare’s sonnets are not included.
+
+2.	This list treats hyphenated word combinations as single words. If your team
+wishes to treat hyphenated words differently, then additional processing may be
+required.
+
+3.	Each line in the file specifies the number of syllables corresponding to the
+word in question. For example, the line “wrinkle 2” indicates that the word
+“wrinkle” has 2 syllables.
+
+4.	Note that in a significant number of cases, the same word corresponds to
+multiple numbers of syllables. For example, in Shakespeare’s iambic pentameter,
+the word “being” sometimes corresponds to 1 syllable and sometimes corresponds
+to 2 syllables. This is denoted in the syllable dictionary as follows: “being 1
+2”. Here, ‘1’ and ‘2’ are the allowable numbers of syllables corresponding to
+“being” in Shakespeare’s sonnets. To better illustrate, here are examples of
+lines from the sonnets where the word “being” takes on 1 and 2 syllables,
+respectively: 
+    a.	As thou being mine, mine is thy good report.
+    b.	Then being asked, where all thy beauty lies,
+
+5.	In many cases, Shakespeare places a word at the end of a line which brings
+the sentence over 10 syllables. For example, consider the following line from
+sonnet 144: 
+    a.	And would corrupt my saint to be a devil:
+Look at where the stresses fall in the iambic pentameter rhythm. It looks like
+the line has 11 syllables rather than 10, with the “de” of “devil” being the
+stressed word on the 10th syllable. In this case, it can be best to count the
+whole word “devil” as a single syllable for purposes of meter. In the syllable
+dictionary, the entry for “devil” appears as “devil E1 2”. The “E” stands for
+“end,” and this means that “devil” has effectively 1 syllable everywhere where
+it occurs at the end of a line, and has 2 syllables anytime it occurs anywhere
+else within a line. There are many such cases, where a word appears to be taken
+to have fewer syllables specifically when it occurs as the last word in a line.
+
+6.	Note that in a number of cases, the syllable counts differ from those found
+in present-day English. For example, everywhere where it occurs in the sonnets,
+the word “power” has only one syllable.
+
