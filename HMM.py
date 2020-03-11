@@ -41,14 +41,24 @@ class HiddenMarkovModel:
             A_start:    Starting transition probabilities. The i^th element
                         is the probability of transitioning from the start
                         state to state i. For simplicity, we assume that
-                        this distribution is uniform.
+                        this distribution is the invariant distribution
+                        for transition matrix A (so at any point, the
+                        marginal probability of being in state i is
+                        given by A_start[i])
         '''
 
         self.L = len(A)
         self.D = len(O[0])
         self.A = np.array(A)
         self.O = np.array(O)
-        self.A_start = np.array([1. / self.L for _ in range(self.L)])
+        self.A_start = self.invariant()
+
+
+    def invariant(self):
+        ''' Update the invariant distribution based on self.A '''
+        eig_vals, vecs = np.linalg.eig(self.A.T)
+        eig_vec = np.real(vecs[:, np.abs(eig_vals - 1.0).argmin()])
+        return eig_vec / np.sum(eig_vec)
 
 
     def viterbi(self, x):
@@ -225,6 +235,7 @@ class HiddenMarkovModel:
         double_margs = np.array(double_margs)
         A_counts = np.sum(double_margs, axis=tuple(range(double_margs.ndim - 2)))
         self.A = A_counts / np.sum(A_counts, axis=1)[:, None]
+        self.A_start = self.invariant()
 
 
     def O_update(self, X, marg_probs):
@@ -313,62 +324,88 @@ class HiddenMarkovModel:
 
 
 
-def from_hmm(hmm, syll_map, obs_map, rhyme_dict=None):                             
+def from_hmm(hmm, obs_map, syll_map=None, rhyme_dict=None):
     '''Make a shakespeare hmm from an hmm '''
-    shake_hmm = ShakespeareHMM(hmm.A, hmm.O, syll_map, obs_map, rhyme_dict)        
+    shake_hmm = ShakespeareHMM(hmm.A, hmm.O, obs_map, syll_map, rhyme_dict)        
     return shake_hmm
 
 
-class ShakespeareHMM(HiddenMarkovModel):                                           
-    '''                                                                            
-    Class implementation of Shakespeare Hidden Markov Models.                      
-    '''                                                                            
-    def __init__(self, A, O, syll_map, obs_map, rhyme_dict=None):                  
-        '''                                                                        
-        Initializes a Shakespeare HMM, inherits from HMMs,                         
-        but also store a syll_map and a rhyming pairs dictionary,                  
-        override the typical generate emission function with                       
-        one that tries to enforce iambic pentameter                                
-        '''                                                                        
-        super().__init__(A, O)                                                     
-        self.syll = syll_map                                                       
-        self.rhyme = rhyme_dict                                                    
-        self.ind_to_word = obs_map_reverser(obs_map)                               
-                                                                                   
-                                                                                   
-    def generate_line(self, syll_count=10, get_states=False):                            
+class ShakespeareHMM(HiddenMarkovModel):
+    '''
+    Class implementation of Shakespeare Hidden Markov Models.
+    '''
+    def __init__(self, A, O, obs_map, syll_map=None, rhyme_dict=None):
+        '''
+        Initializes a Shakespeare HMM, inherits from HMMs,
+        but also store a syll_map and a rhyming pairs dictionary,
+        override the typical generate emission function with
+        one that tries to enforce iambic pentameter
+        '''
+        super().__init__(A, O)
+        self.syll = syll_map
+        self.rhyme = rhyme_dict
+        self.ind_to_word = obs_map_reverser(obs_map)
+
+    def to_word(self, emission):
+        sentence = ' '.join([self.ind_to_word[i] for i in emission]).capitalize()
+        return sentence + ','
+
+    def gen_line(self, syll_count=10, get_states=False, as_word=True):
         ''' Get a single line of syll_count syllables '''
-        emission = []                                                              
-        states = []                                                                
-                                                                                   
-        states.append(np.random.choice(self.L, p = self.A_start))                  
-        remain = syll_count                                                        
-        while remain != 0:                                                         
-            curr_state = states[-1]                                                
-            pred = lambda l: min(l) <= remain or any(np.mod(l, 10) == remain)      
-            inds = np.array([i for i in range(self.D) if pred(self.syll[i])])   
-            p = self.O[curr_state, inds]; p /= np.sum(p)                        
-            ind = np.random.choice(inds, p = p)                                    
-            emission.append(ind)                                                   
-            l = self.syll[ind]                                                     
-            count_decrement = l.min() if l.min() <= remain else remain             
-            remain -= count_decrement                                              
-            states.append(np.random.choice(self.L, p = self.A[curr_state]))        
-                                                                                   
-        sentence = ' '.join([self.ind_to_word[i] for i in emission]).capitalize()   
-        sentence += ','                                                         
-        return (sentence, states[:-1]) if get_states else sentence 
+        assert(self.syll is not None)
+        emission = []
+        states = []
+ 
+        states.append(np.random.choice(self.L, p = self.A_start))
+        remain = syll_count
+        while remain != 0:
+            curr_state = states[-1]
+            pred = lambda l: min(l) <= remain or any(np.mod(l, 10) == remain)
+            inds = np.array([i for i in range(self.D) if pred(self.syll[i])])
+            p = self.O[curr_state, inds]; p /= np.sum(p)
+            ind = np.random.choice(inds, p = p)
+            emission.append(ind)
+            l = self.syll[ind]
+            count_decrement = l.min() if l.min() <= remain else remain
+            remain -= count_decrement
+            states.append(np.random.choice(self.L, p = self.A[curr_state]))
+ 
+        emission = emission if not as_word else self.to_word(emission)
+        return (emission, states[:-1]) if get_states else emission
     
-    def generate_pair(self):                                                       
+    def gen_pair(self):                                                       
         '''                                                                    
         Generate a pair of iambic pentameter lines that rhyme                  
         '''                                                                    
-        # TODO construct rhyming dict and use                                  
-        pass                                                                   
+        assert(self.rhyme is not None)
+        while True:
+            try:
+                line1 = self.gen_line(syll_count=10, as_word=False)
+                inds = self.rhyme[line1[-1]]
+                break
+            except KeyError:
+                pass
+        p = np.dot(self.A_start, self.O[:, inds]); p /= np.sum(p)
+        ind = np.random.choice(inds, p = p)
+
+        line2 = self.gen_line(syll_count=10-self.syll[ind].min(),\
+                                            as_word=False)
+        line2 += [ind]
+        return (self.to_word(line1), self.to_word(line2))
                                                                                
-    def generate_sonnet(self, M=14):                                           
-        ''' Get a sonnet with M lines '''
-        sonnet = [self.generate_line() for i in range(M)]                      
+    def generate_sonnet(self, do_syll=True, do_rhyme=True,\
+                        n_lines=14, syll_count=10, quats=3, coups=1):
+        ''' Get a sonnet with n_lines lines '''
+        if do_syll and do_rhyme:
+            sonnet1 = np.ravel([self.gen_pair() for _ in range(2*quats + coups)])
+            sonnet = [sonnet1[4*i + off] for i in range(quats) \
+                                         for off in [0, 2, 1, 3]]
+            sonnet += list(sonnet1[4*quats:])
+        elif do_syll:
+            sonnet = [self.gen_line(syll_count) for i in range(n_lines)]
+        else:
+            emissions = [self.generate_emission(syll_count)[0] for i in range(n_lines)]
+            sonnet = [self.to_word(e) for e in emissions]
         return '\n'.join(sonnet)
 
 
