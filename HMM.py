@@ -187,7 +187,7 @@ class HiddenMarkovModel:
 
 
 
-    def unsupervised_learning(self, X, N_iters):
+    def unsupervised_learning(self, X, N_iters, verbose=True):
         '''
         Trains the HMM using the Baum-Welch algorithm on an unlabeled
         datset X. Note that this method does not return anything, but
@@ -201,7 +201,8 @@ class HiddenMarkovModel:
             N_iters:    The number of iterations to train on.
         '''
 
-        for _ in tqdm(range(N_iters)):
+        range_obj = tqdm(range(N_iters)) if verbose else range(N_iters)
+        for _ in range_obj:
 
             # Expectation
             marg_probs = []
@@ -350,13 +351,20 @@ class ShakespeareHMM(HiddenMarkovModel):
         sentence = ' '.join([self.ind_to_word[i] for i in emission]).capitalize()
         return sentence + ','
 
-    def gen_line(self, syll_count=10, get_states=False, as_word=True):
+    # p(a | b) propto p(b | a) * p(a), p(a) comes from invariant, p(b | a)
+    # is just the A matrix at ab.
+    def gen_line(self, backward=False, seed_state=None,
+                 syll_count=10, get_states=False, as_word=True):
         ''' Get a single line of syll_count syllables '''
-        assert(self.syll is not None)
+
+        A = self.A
+        if backward:
+            A = (self.A.T * self.A_start[None, :]); A /= A.sum(axis=1)[:, None]
+        pi = A[seed_state] if seed_state else self.A_start 
         emission = []
         states = []
  
-        states.append(np.random.choice(self.L, p = self.A_start))
+        states.append(np.random.choice(self.L, p = pi))
         remain = syll_count
         while remain != 0:
             curr_state = states[-1]
@@ -368,40 +376,47 @@ class ShakespeareHMM(HiddenMarkovModel):
             l = self.syll[ind]
             count_decrement = l.min() if l.min() <= remain else remain
             remain -= count_decrement
-            states.append(np.random.choice(self.L, p = self.A[curr_state]))
+            states.append(np.random.choice(self.L, p = A[curr_state]))
+        states.pop()
+        if backward:
+            emission = emission[::-1]; states = states[::-1]
  
         emission = emission if not as_word else self.to_word(emission)
-        return (emission, states[:-1]) if get_states else emission
+        return (emission, states) if get_states else emission
     
+
     def gen_pair(self):                                                       
         '''                                                                    
         Generate a pair of iambic pentameter lines that rhyme                  
         '''                                                                    
-        assert(self.rhyme is not None)
-        while True:
-            try:
-                line1 = self.gen_line(syll_count=10, as_word=False)
-                inds = self.rhyme[line1[-1]]
-                break
-            except KeyError:
-                pass
-        p = np.dot(self.A_start, self.O[:, inds]); p /= np.sum(p)
-        ind = np.random.choice(inds, p = p)
+        # Get random line ending with word that rhymes with stuff
+        seed1 = np.random.choice(list(self.rhyme.keys()))
+        syll1 = self.syll[seed1].min()
+        seed_state1 = np.argmax(self.O[:, seed1] * self.A_start)
+        line1 = self.gen_line(syll_count=10-syll1, backward=True, 
+                              seed_state=seed_state1, as_word=False)
+        line1.append(seed1)
 
-        line2 = self.gen_line(syll_count=10-self.syll[ind].min(),\
-                                            as_word=False)
-        line2 += [ind]
+        # Get second line using word rhyming with 1st line
+        seed2 = np.random.choice(self.rhyme[seed1])
+        syll2 = self.syll[seed2].min()
+        seed_state2 = np.argmax(self.O[:, seed2] * self.A_start)
+        line2 = self.gen_line(syll_count=10-syll2, backward=True, 
+                              seed_state=seed_state2, as_word=False)
+        line2.append(seed2)
         return (self.to_word(line1), self.to_word(line2))
                                                                                
     def generate_sonnet(self, do_syll=True, do_rhyme=True,\
                         n_lines=14, syll_count=10, quats=3, coups=1):
         ''' Get a sonnet with n_lines lines '''
         if do_syll and do_rhyme:
+            assert(self.rhyme is not None and self.syll is not None)
             sonnet1 = np.ravel([self.gen_pair() for _ in range(2*quats + coups)])
             sonnet = [sonnet1[4*i + off] for i in range(quats) \
                                          for off in [0, 2, 1, 3]]
             sonnet += list(sonnet1[4*quats:])
         elif do_syll:
+            assert(self.syll is not None)
             sonnet = [self.gen_line(syll_count) for i in range(n_lines)]
         else:
             emissions = [self.generate_emission(syll_count)[0] for i in range(n_lines)]
@@ -468,7 +483,7 @@ def supervised_HMM(X, Y):
 
     return HMM
 
-def unsupervised_HMM(X, n_states, N_iters):
+def unsupervised_HMM(n_states, X, N_iters, verbose=True):
     '''
     Helper function to train an unsupervised HMM. The function determines the
     number of unique observations in the given data, initializes
@@ -514,7 +529,7 @@ def unsupervised_HMM(X, n_states, N_iters):
 
     # Train an HMM with unlabeled data.
     HMM = HiddenMarkovModel(A, O)
-    HMM.unsupervised_learning(X, N_iters)
+    HMM.unsupervised_learning(X, N_iters, verbose=verbose)
 
     return HMM
 
