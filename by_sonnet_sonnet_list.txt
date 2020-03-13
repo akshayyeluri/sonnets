@@ -1,0 +1,342 @@
+hidden_states = 2
+----------------------------------------
+Come the which lies afloat thy and endure,
+Say thy oppression dear from garments' mind,
+That writ love you o thence i told no cure,
+Treasure of may aggravate not he wronk find,
+Remembered my i than so time be bold,
+Thou not thee to excuse' change thrive staineth,
+Never love bed all for when am with gate hold,
+Thy i turn my for all sang disdaineth,
+Pine in shady and this in lack which those,
+Nor due or of maid half these by or one,
+String me my any pitch for needs ere rose,
+Doth all for dial's and thy the in loan,
+Robs owes pricked of me break than world subsist,
+All you which be your i thou the for missed,
+
+
+
+hidden_states = 4
+----------------------------------------
+Thy still windows are that to mountain dyed,
+Not from dead in stage me your as deface,
+Prone heart or doth my he to dignified,
+You must case happy be to still in place,
+No newer knowing would your with place kind,
+Wink have grace body's thee or water set,
+Repent thou true be where of if behind,
+He as since so foul of which counterfeit,
+Beauty am his thee never wherefore is,
+World and to the you or dreams bright other,
+And you fair change long and but your amis,
+Me in thou is to dear a no smother,
+Youth like wanton by me make to do go,
+Be you find and to so him wilful-slow,
+
+
+
+hidden_states = 8
+----------------------------------------
+The one and say of my overthrow sit,
+I painting though to do mayst from thine sway'st,
+Your deeds of the bloody right each nor it,
+Heart eye his ceremony tie worse play'st,
+In the as away from his foul mar lost,
+Brought with swallowed store loves no maiden heart,
+Remedy of black dost the vulgar most,
+The appeal and they do thy thing depart,
+A wont is made still but for me is lays,
+O of hue that taught leaped covetous live,
+Me spring their world past seest another days,
+Hours weed find and runs junes wealth whilst good give,
+Doth all gentle blood feeds a thy why strife,
+With on dust i me i art of be life,
+
+
+
+hidden_states = 16
+----------------------------------------
+Spies and in thy might i in ear chest on,
+Worst it as once been and eyes character,
+Full thine or i should transport of flesh gone,
+Profitless concealed from with register,
+Not she thy poor mine best she thou hate score,
+Honouring moon vanishing in the spite,
+Treasure that my self on gay my love doth more,
+Loving bright write fits thee but feeds of delight,
+My no to o with the my sinful wrought,
+Of false holds murd'rous sweetest thine of kind,
+Compeers show and me cannot not that thought,
+Dearer is then i on my gain confined,
+Boast others nor not is first the endure,
+Doth it that for that she beauty form cure,
+
+
+
+hidden_states = 24
+----------------------------------------
+How no love's dear will distilled weed befits,
+Straight my thou redeem which out large trust feel,
+I my but clears then thou of or commits,
+Another skill stays you in such in steel,
+So thee so cast hue tickled is expense,
+To self what grows the heart 'now lords my own,
+Thy doth than upon my i excellence,
+Wit wherefore to her sweet deep counted shown,
+And his a have or you art proof tongue score,
+Treason temperate gave calls thy dignified,
+Thou can of earth faults of his own that more,
+What praise how thing be fair lies in ah dyed,
+It view might do why thee change your despise,
+High to closure array thee my trouble eyes,
+
+
+
+hidden_states = 32
+----------------------------------------
+And i prefiguring his made control,
+By shake hands you advantage bereft speed,
+Is and days and and eclipses that soul,
+My that uprear on hear new-fangled need,
+Times honour proof powerful but up feature,
+My lilies thy she this new-fangled air,
+Sight and hath truly by with my creature,
+O but that a noted second part fair,
+Prime knew others against lies that friend bred,
+All while sweet nearly tables for blindness,
+Eye though some thee and is be doth see dead,
+Their and spend what let beauteous state kindness,
+Then sad blot shines men's my up me thence go,
+All back still such brood am from thee fast know,
+
+
+
+hidden_states = 2
+----------------------------------------
+Come the which lies afloat thy and endure,
+Say thy oppression dear from garments' mind,
+That writ love you o thence i told no cure,
+Treasure of may aggravate not he wronk find,
+Remembered my i than so time be bold,
+Thou not thee to excuse' change thrive staineth,
+Never love bed all for when am with gate hold,
+Thy i turn my for all sang disdaineth,
+Pine in shady and this in lack which those,
+Nor due or of maid half these by or one,
+String me my any pitch for needs ere rose,
+Doth all for dial's and thy the in loan,
+Robs owes pricked of me break than world subsist,
+All you which be your i thou the for missed,
+
+
+
+hidden_states = 4
+----------------------------------------
+Thy still windows are that to mountain dyed,
+Not from dead in stage me your as deface,
+Prone heart or doth my he to dignified,
+You must case happy be to still in place,
+No newer knowing would your with place kind,
+Wink have grace body's thee or water set,
+Repent thou true be where of if behind,
+He as since so foul of which counterfeit,
+Beauty am his thee never wherefore is,
+World and to the you or dreams bright other,
+And you fair change long and but your amis,
+Me in thou is to dear a no smother,
+Youth like wanton by me make to do go,
+Be you find and to so him wilful-slow,
+
+
+
+hidden_states = 8
+----------------------------------------
+The one and say of my overthrow sit,
+I painting though to do mayst from thine sway'st,
+Your deeds of the bloody right each nor it,
+Heart eye his ceremony tie worse play'st,
+In the as away from his foul mar lost,
+Brought with swallowed store loves no maiden heart,
+Remedy of black dost the vulgar most,
+The appeal and they do thy thing depart,
+A wont is made still but for me is lays,
+O of hue that taught leaped covetous live,
+Me spring their world past seest another days,
+Hours weed find and runs junes wealth whilst good give,
+Doth all gentle blood feeds a thy why strife,
+With on dust i me i art of be life,
+
+
+
+hidden_states = 16
+----------------------------------------
+Spies and in thy might i in ear chest on,
+Worst it as once been and eyes character,
+Full thine or i should transport of flesh gone,
+Profitless concealed from with register,
+Not she thy poor mine best she thou hate score,
+Honouring moon vanishing in the spite,
+Treasure that my self on gay my love doth more,
+Loving bright write fits thee but feeds of delight,
+My no to o with the my sinful wrought,
+Of false holds murd'rous sweetest thine of kind,
+Compeers show and me cannot not that thought,
+Dearer is then i on my gain confined,
+Boast others nor not is first the endure,
+Doth it that for that she beauty form cure,
+
+
+
+hidden_states = 24
+----------------------------------------
+How no love's dear will distilled weed befits,
+Straight my thou redeem which out large trust feel,
+I my but clears then thou of or commits,
+Another skill stays you in such in steel,
+So thee so cast hue tickled is expense,
+To self what grows the heart 'now lords my own,
+Thy doth than upon my i excellence,
+Wit wherefore to her sweet deep counted shown,
+And his a have or you art proof tongue score,
+Treason temperate gave calls thy dignified,
+Thou can of earth faults of his own that more,
+What praise how thing be fair lies in ah dyed,
+It view might do why thee change your despise,
+High to closure array thee my trouble eyes,
+
+
+
+hidden_states = 32
+----------------------------------------
+And i prefiguring his made control,
+By shake hands you advantage bereft speed,
+Is and days and and eclipses that soul,
+My that uprear on hear new-fangled need,
+Times honour proof powerful but up feature,
+My lilies thy she this new-fangled air,
+Sight and hath truly by with my creature,
+O but that a noted second part fair,
+Prime knew others against lies that friend bred,
+All while sweet nearly tables for blindness,
+Eye though some thee and is be doth see dead,
+Their and spend what let beauteous state kindness,
+Then sad blot shines men's my up me thence go,
+All back still such brood am from thee fast know,
+
+
+
+hidden_states = 2
+----------------------------------------
+Stay the nothing thy works his a endure,
+From stewards fast diseased when she own feast,
+Flattery may present-absent alone cure,
+To clearer steep-up courses love of guest,
+With works o rightly possesseth of great,
+Saw level thee to these better exchanged,
+To sigh self now to cheered only defeat,
+More in his mine keep have within while ranged,
+Leaving me own me as when upon no,
+Busy dreams till be but authority,
+Arrest be on shall appear than to so,
+Whilst madness strong me and simplicity,
+That of gone engrafted thy old my view,
+That heavy to thus self your fresh best new,
+
+
+
+hidden_states = 4
+----------------------------------------
+Then rank most lusty invited fear mine,
+A beast have to merit that certain cries,
+Face ever soul passed horses therefore line,
+Dost nor you a would and checked that thy eyes,
+Harmful men's and on bestow'st dressed stronger,
+That him a and painter's knows but his trim,
+Oppression this heart debateth longer,
+Love purge gains your end and my which i'll him,
+I enough to love of and my how leap,
+To from is lines which unkind hours i wights,
+A shape said afterwards that compounds reap,
+Her grave this my steal praise oaths an the knights,
+Of these from others' live make picture shown,
+Thee of night were youth kind let thee by own,
+
+
+
+hidden_states = 8
+----------------------------------------
+Map now old but with weigh to strains smother,
+Is ah what as hell lend to is cherish,
+Me win to when of so am nights other,
+Hill i above thy thy all now perish,
+That passion picture numbers was to morn,
+That love i find or end comes husbandry,
+Eyes thy mayst and where hideous woe o'erworn,
+Keep and is day like soul posterity,
+Are birth for other thought thy graces young,
+Not followed deeds beauty's abundance haste,
+Like thoughts thy delighted say feast each wrong,
+Birth shines palate doth while o because past,
+And nor that hear says first enough distilled,
+Breast merchandized hold buried send'st self-killed,
+
+
+
+hidden_states = 16
+----------------------------------------
+Hue gazed that thee way verse as thine grief green,
+Of suspect dost day at than most and scorn,
+Not men's force thou on face could a put'st seen,
+With eyes free speak converted them forsworn,
+Drinks eyes and thy the had or rhyme glory,
+They fuel my chopt ye live thine thee love stain,
+As both looks doth self yet to moan story,
+Sweet my would should have if and were again,
+Any woman's see and press in strumpeted,
+He make did his am sings world as whom rite,
+State thou slavery poorly disabled,
+Than for as then lust make the forwards might,
+From the have my thou and and pleasure thence,
+Then and decease am in that blind offence,
+
+
+
+hidden_states = 24
+----------------------------------------
+Evil hope only and in shall that sing,
+Me thy i'll raised but love proudest and lips,
+Virtue i in wit praise must seeting spring,
+I thy wealth my nothing gazed thievish chips,
+Bath my flesh in and fear what mine of not,
+Pride thine since not if draw alone when made,
+Hate deeds west words action and health than plot,
+Assured thou at forth i kind-hearted jade,
+Your the because devil my to then right,
+Whether thus of be with to to with is fuel,
+Thy believe is make sense kind in youth sight,
+Your loved substance new in best dead cruel,
+But all love love's lips only thou sweet head,
+In gladly the doth death this say work bed,
+
+
+
+hidden_states = 32
+----------------------------------------
+To not a the he 'i most as their gay,
+Compare pray to do soul black are shall wing,
+If tell cannot built jade wherefore away,
+Pleasure your but on my he self if sing,
+Sepulchres not with be thou will think man,
+As still sharpened it but heavy dwell prone,
+Of they brain to-day others me woe can,
+With love who in of thy art i alone,
+As which made more hand sap cold with conspire,
+Stay you guilt the my face find committed,
+Part mourn the whose annoy not and desire,
+Took lose my lips behind faster fitted,
+Thee any thee yet one impiety,
+Or give false with plead as society,
+
+
+
