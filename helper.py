@@ -1,10 +1,12 @@
 import re, string
-import nltk
 import numpy as np
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from matplotlib import animation
 from matplotlib.animation import FuncAnimation
+
+import nltk
+from nltk.corpus import cmudict
 
 ####################
 # Syllable processing functions
@@ -14,7 +16,7 @@ def get_syll_map(words):
     '''
     Get a syllable dict from a set of words using nltk to guess
     '''
-    arpabet = nltk.corpus.cmudict.dict()
+    arpabet = cmudict.dict()
     counter = lambda l: sum([any([(d in w) for d in string.digits]) for w in l])
     mapper = {w : list(set(counter(pron) for pron in arpabet[w])) \
                   for w in words if w in arpabet}
@@ -172,6 +174,8 @@ def rhyme_dict_lim(text, sonnet_l=14, abab_pattern_l=12,
     coup = [seqs[i+offset][-1] for i in range(0, len(seqs), 5)               
                                 for offset in [2, 3]]
     
+
+
     pair_ends = list(np.ravel([[(a,b),(b,c),(c,a)] for (a,b,c) in np.array(main).reshape(-1, 3)]))
     pair_ends += coup                               
     pairs = list(zip(pair_ends[::2], pair_ends[1::2]))                          
@@ -337,6 +341,65 @@ def visualize_sparsities(hmm, O_max_cols=50, O_vmax=0.1):
     plt.show()
 
 
+def get_stats(hmm, obs_map, M = 100000):
+    n_states = len(hmm.A)
+    obs_map_r = obs_map_reverser(obs_map)
+    wordclouds = []
+    cmu_dict = cmudict.dict()
+    # Generate a large emission.
+    emission, states = hmm.generate_emission(M)
+
+    # For each state, get a list of observations that have been emitted
+    # from that state.
+    obs_count = []
+    for i in range(n_states):
+        obs_lst = np.array(emission)[np.where(np.array(states) == i)[0]]
+        obs_count.append(obs_lst)
+
+
+    for i in range(n_states):
+        obs_lst = obs_count[i]
+        sentence = [obs_map_r[j] for j in obs_lst]
+        sentence_str = ' '.join(sentence)
+        tokenized = nltk.word_tokenize(sentence_str)
+        tagged = nltk.pos_tag(tokenized, tagset = 'universal')
+        tags = np.ndarray.tolist(np.array(tagged)[:,1])
+        print("State %d"% i)
+        print("Nouns: %f%%"% (tags.count('NOUN')/len(sentence) * 100))
+        print("Verbs: %f%%"% (tags.count('VERB')/len(sentence) * 100))
+        print("Pronouns: %f%%"% (tags.count('PRON')/len(sentence) * 100))
+        print("Adjectives: %f%%"% (tags.count('ADJ')/len(sentence) * 100))
+        print("Adverbs: %f%%"% (tags.count('ADV')/len(sentence) * 100))
+        print("Adpositions: %f%%"% (tags.count('ADP')/len(sentence) * 100))
+        print("Conjunctions: %f%%"% (tags.count('CONJ')/len(sentence) * 100))
+        print("Determiners: %f%%"% (tags.count('DET')/len(sentence) * 100))
+        print("Cardinal Numbers: %f%%"% (tags.count('NUM')/len(sentence) * 100))
+        print("Particles: %f%%"% (tags.count('PRT')/len(sentence) * 100))
+        print("Other: %f%%"% (tags.count('X')/len(sentence) * 100))
+        print("Punctuation: %f%%"% (tags.count('.')/len(sentence) * 100))
+        print()
+
+        syll_dict = {}
+        stress_dict = {}
+        for word in sentence:
+            if word in cmu_dict:
+                pron = cmu_dict[word][0]
+                stress = ""
+                for j in pron:
+                    if j[-1] == '0':
+                        stress += 'U'
+                    elif j[-1] == '1' or j[-1] == '2':
+                        stress += 'S'
+                if stress in stress_dict:
+                    stress_dict[stress] += 1
+                    syll_dict[len(stress)] += 1
+                else:
+                    stress_dict[stress] = 1
+                    syll_dict[len(stress)] = 1
+
+        print(syll_dict)
+        print(stress_dict)
+        print()
     
     
 ####################
@@ -443,4 +506,6 @@ def animate_emission(hmm, obs_map, M=8, height=12, width=12, delay=1):
     # i don't even remember how or why i wrote this mess
     # no one's gonna read this
     # hey if you see this tho hmu on fb let's be friends
+
+
 
