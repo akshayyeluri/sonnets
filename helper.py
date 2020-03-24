@@ -1,15 +1,25 @@
 import re, string
+import nltk
 import numpy as np
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from matplotlib import animation
 from matplotlib.animation import FuncAnimation
-import nltk
-from nltk.corpus import cmudict
 
 ####################
-# Parsing functions
+# Syllable processing functions
 ####################
+
+def get_syll_map(words):
+    '''
+    Get a syllable dict from a set of words using nltk to guess
+    '''
+    arpabet = nltk.corpus.cmudict.dict()
+    counter = lambda l: sum([any([(d in w) for d in string.digits]) for w in l])
+    mapper = {w : list(set(counter(pron) for pron in arpabet[w])) \
+                  for w in words if w in arpabet}
+    bad_words = [w for w in words if w not in arpabet]
+    return mapper, bad_words
 
 def update_syll_map(syll_map, obs_map):
     '''
@@ -28,7 +38,13 @@ def update_syll_map(syll_map, obs_map):
         del syll_map[w]
     assert(set(syll_map.keys()) == word_set)
     return {obs_map[k]:v for k, v in syll_map.items()}
+ 
     
+    
+    
+########################################
+# Parsing functions for Sonnets
+########################################
 
 def parse_text(text, by = 'line', cap='lower', \
                punc_to_drop=re.sub(r"[-']", '', string.punctuation),
@@ -112,6 +128,88 @@ def rhyme_dict_gen(text, sonnet_l=14, abab_pattern_l=12,
 
 
 
+
+########################################
+# Parsing functions for Limericks
+########################################
+
+def parse_lim(text, by = 'line', cap='lower', \
+               punc_to_drop=re.sub(r"[-']", '', string.punctuation)):
+    '''
+    Parse a text into a sequence of either limericks, stanzas, or lines.
+    Also handle punctuation and capitalization issues
+    '''
+    
+    if punc_to_drop:
+        text = text.translate(str.maketrans('', '', punc_to_drop))
+    if cap == 'lower':
+        text = text.lower()
+        
+    limericks = text.split('\n\n')
+    # 98 and 125 are NOT 14 line sonnets (15 and 12 resp.)
+    limericks = [s for s in limericks if len(s.split('\n')) == 5]
+    lines = [l.strip() for s in limericks for l in s.split('\n')]
+    
+    if by == 'line':
+        seqs = lines
+    elif by == 'limerick':
+        seqs = [' '.join(lines[i:i+5]) for i in range(0, len(lines), 5)]
+        
+    return seqs
+
+
+def rhyme_dict_lim(text, sonnet_l=14, abab_pattern_l=12,
+                    connected=False, with_words = False): 
+    '''
+    Generate a rhyming dictionary for limericks.
+    '''
+    lines = parse_lim(text, by='line')                                         
+    seqs, obs_map = parse_seqs(lines)
+    ind_to_word = obs_map_reverser(obs_map)
+                                                                                
+    main = [seqs[i+offset][-1] for i in range(0, len(seqs), 5)               
+                                for offset in [0, 1, 4]]            
+    coup = [seqs[i+offset][-1] for i in range(0, len(seqs), 5)               
+                                for offset in [2, 3]]
+    
+    pair_ends = list(np.ravel([[(a,b),(b,c),(c,a)] for (a,b,c) in np.array(main).reshape(-1, 3)]))
+    pair_ends += coup                               
+    pairs = list(zip(pair_ends[::2], pair_ends[1::2]))                          
+                                                                                
+    if connected:
+        eq_classes = []
+        for (w1, w2) in pairs:
+            already_added = False
+            for c in eq_classes:
+                if w1 in c or w2 in c:
+                    c.add(w1); c.add(w2)
+                    already_added = True
+                    break
+            if not already_added:
+                c = set(); c.add(w1); c.add(w2)
+                eq_classes.append(c)
+        d = {w:np.array(list(c)) for c in eq_classes for w in c}
+        
+    else:
+        # Only use rhyming pairings shakespeare specified
+        d = {}                                                                      
+        for (w1, w2) in pairs:                                                      
+            if w1 not in d:                                                         
+                d[w1] = []                                                          
+            if w2 not in d:                                                         
+                d[w2] = []
+            d[w1] += [w2] if w2 not in d[w1] else [] 
+            d[w2] += [w1] if w1 not in d[w2] else []                             
+    
+        d = {k:np.unique(v) for k, v in d.items()}
+    d_with_words = {ind_to_word[w1] : np.array([ind_to_word[w2] for w2 in v])    
+                                      for w1, v in d.items()}                                                                       
+    return d_with_words if with_words else d
+
+
+
+
+
 ####################
 # WORDCLOUD FUNCTIONS
 ####################
@@ -176,67 +274,6 @@ def states_to_wordclouds(hmm, obs_map, max_words=50, show=True,
 
     return wordclouds
 
-def get_stats(hmm, obs_map, M = 100000):
-    n_states = len(hmm.A)
-    obs_map_r = obs_map_reverser(obs_map)
-    wordclouds = []
-    cmu_dict = cmudict.dict()
-    # Generate a large emission.
-    emission, states = hmm.generate_emission(M)
-
-    # For each state, get a list of observations that have been emitted
-    # from that state.
-    obs_count = []
-    for i in range(n_states):
-        obs_lst = np.array(emission)[np.where(np.array(states) == i)[0]]
-        obs_count.append(obs_lst)
-
-    
-    for i in range(n_states):
-        obs_lst = obs_count[i]
-        sentence = [obs_map_r[j] for j in obs_lst]
-        sentence_str = ' '.join(sentence)
-        tokenized = nltk.word_tokenize(sentence_str)
-        tagged = nltk.pos_tag(tokenized, tagset = 'universal')
-        tags = np.ndarray.tolist(np.array(tagged)[:,1])
-        print("State %d"% i)
-        print("Nouns: %f%%"% (tags.count('NOUN')/len(sentence) * 100))
-        print("Verbs: %f%%"% (tags.count('VERB')/len(sentence) * 100))
-        print("Pronouns: %f%%"% (tags.count('PRON')/len(sentence) * 100))
-        print("Adjectives: %f%%"% (tags.count('ADJ')/len(sentence) * 100))
-        print("Adverbs: %f%%"% (tags.count('ADV')/len(sentence) * 100))
-        print("Adpositions: %f%%"% (tags.count('ADP')/len(sentence) * 100))
-        print("Conjunctions: %f%%"% (tags.count('CONJ')/len(sentence) * 100))
-        print("Determiners: %f%%"% (tags.count('DET')/len(sentence) * 100))
-        print("Cardinal Numbers: %f%%"% (tags.count('NUM')/len(sentence) * 100))
-        print("Particles: %f%%"% (tags.count('PRT')/len(sentence) * 100))
-        print("Other: %f%%"% (tags.count('X')/len(sentence) * 100))
-        print("Punctuation: %f%%"% (tags.count('.')/len(sentence) * 100))
-        print()
-        
-        syll_dict = {}
-        stress_dict = {}
-        for word in sentence:
-            if word in cmu_dict:
-                pron = cmu_dict[word][0]
-                stress = ""
-                for j in pron:
-                    if j[-1] == '0':
-                        stress += 'U'
-                    elif j[-1] == '1' or j[-1] == '2':
-                        stress += 'S'
-                if stress in stress_dict:
-                    stress_dict[stress] += 1
-                    syll_dict[len(stress)] += 1
-                else:
-                    stress_dict[stress] = 1
-                    syll_dict[len(stress)] = 1
-            
-        print(syll_dict)
-        print(stress_dict)
-        print()
-
-
 
 ####################
 # HMM FUNCTIONS
@@ -300,6 +337,8 @@ def visualize_sparsities(hmm, O_max_cols=50, O_vmax=0.1):
     plt.show()
 
 
+    
+    
 ####################
 # HMM ANIMATION FUNCTIONS
 ####################

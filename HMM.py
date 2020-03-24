@@ -2,7 +2,7 @@ import random
 import numpy as np
 np.random.seed(420)
 from tqdm import tqdm
-from HMM_helper import obs_map_reverser
+from helper import obs_map_reverser
 
 
 class HiddenMarkovModel:
@@ -322,14 +322,10 @@ class HiddenMarkovModel:
         return prob
 
 
-
-
-
 def from_hmm(hmm, obs_map, syll_map=None, rhyme_dict=None):
     '''Make a shakespeare hmm from an hmm '''
     shake_hmm = ShakespeareHMM(hmm.A, hmm.O, obs_map, syll_map, rhyme_dict)        
     return shake_hmm
-
 
 class ShakespeareHMM(HiddenMarkovModel):
     '''
@@ -423,6 +419,100 @@ class ShakespeareHMM(HiddenMarkovModel):
             sonnet = [self.to_word(e) for e in emissions]
         return '\n'.join(sonnet)
 
+    
+    
+    
+    
+    
+    
+def from_hmm_lim(hmm, obs_map, syll_map=None, rhyme_dict=None):
+    '''Make a limerick hmm from an hmm '''
+    lim_hmm = Lim_HMM(hmm.A, hmm.O, obs_map, syll_map, rhyme_dict)        
+    return lim_hmm
+    
+class Lim_HMM(HiddenMarkovModel):
+    '''
+    Class implementation of Shakespeare Hidden Markov Models.
+    '''
+    def __init__(self, A, O, obs_map, syll_map=None, rhyme_dict=None):
+        '''
+        Initializes a Shakespeare HMM, inherits from HMMs,
+        but also store a syll_map and a rhyming pairs dictionary,
+        override the typical generate emission function with
+        one that tries to enforce iambic pentameter
+        '''
+        super().__init__(A, O)
+        self.syll = syll_map
+        self.rhyme = rhyme_dict
+        self.ind_to_word = obs_map_reverser(obs_map)
+
+    def to_word(self, emission):
+        sentence = ' '.join([self.ind_to_word[i] for i in emission]).capitalize()
+        return sentence + ','
+
+    # p(a | b) propto p(b | a) * p(a), p(a) comes from invariant, p(b | a)
+    # is just the A matrix at ab.
+    def gen_line(self, backward=False, seed_state=None,
+                 syll_count=10, get_states=False, as_word=True):
+        ''' Get a single line of syll_count syllables '''
+
+        A = self.A
+        if backward:
+            A = (self.A.T * self.A_start[None, :]); A /= A.sum(axis=1)[:, None]
+        pi = A[seed_state] if seed_state else self.A_start 
+        emission = []
+        states = []
+ 
+        states.append(np.random.choice(self.L, p = pi))
+        remain = syll_count
+        while remain != 0:
+            curr_state = states[-1]
+            pred = lambda l: min(l) <= remain
+            inds = np.array([i for i in range(self.D) if pred(self.syll[i])])
+            p = self.O[curr_state, inds]; p /= np.sum(p)
+            ind = np.random.choice(inds, p = p)
+            emission.append(ind)
+            l = self.syll[ind]
+            count_decrement = l.min() if l.min() <= remain else remain
+            remain -= count_decrement
+            states.append(np.random.choice(self.L, p = A[curr_state]))
+        states.pop()
+        if backward:
+            emission = emission[::-1]; states = states[::-1]
+ 
+        emission = emission if not as_word else self.to_word(emission)
+        return (emission, states) if get_states else emission
+    
+
+    def gen_rhyme_n(self, n, syllables):                                                       
+        '''                                                                    
+        Generate a pair of iambic pentameter lines that rhyme                  
+        '''                                                                    
+        # Get random line ending with word that rhymes with stuff
+        seed1 = np.random.choice(list(self.rhyme.keys()))
+        syll1 = self.syll[seed1].min()
+        seed_state1 = np.argmax(self.O[:, seed1] * self.A_start)
+        line1 = self.gen_line(syll_count=syllables-syll1, backward=True, 
+                              seed_state=seed_state1, as_word=False)
+        line1.append(seed1)
+        lines = [self.to_word(line1)]
+        # Get second line using word rhyming with 1st line
+        for i in range(n - 1):
+            seed2 = np.random.choice(self.rhyme[seed1])
+            syll2 = self.syll[seed2].min()
+            seed_state2 = np.argmax(self.O[:, seed2] * self.A_start)
+            line2 = self.gen_line(syll_count=syllables-syll2, backward=True, 
+                                  seed_state=seed_state2, as_word=False)
+            line2.append(seed2)
+            lines.append(self.to_word(line2))
+        return lines
+                                                                               
+    def generate_limerick(self):
+        ''' Get a sonnet with n_lines lines '''
+        main = self.gen_rhyme_n(3, 7)
+        coup = self.gen_rhyme_n(2, 5)
+        limerick = [main[0], main[1], coup[0], coup[1], main[2]]
+        return '\n'.join(limerick)
 
 
 
